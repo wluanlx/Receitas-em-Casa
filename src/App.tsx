@@ -255,7 +255,7 @@ export default function App() {
                     value={ingredientsInput}
                     onChange={(e) => setIngredientsInput(e.target.value)}
                     placeholder="Ex: arroz, ovo, frango..."
-                    className="w-full h-32 p-5 rounded-3xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-base resize-none shadow-inner"
+                    className="w-full h-32 p-5 rounded-3xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-base text-black dark:text-black resize-none shadow-inner"
                   />
                   {ingredientsInput && (
                     <button 
