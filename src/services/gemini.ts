@@ -6,7 +6,8 @@ export async function generateRecipesFromIngredients(ingredients: string[]) {
   const prompt = `Crie 5 receitas simples e brasileiras usando principalmente estes ingredientes: ${ingredients.join(", ")}. 
   As receitas devem ser fáceis, rápidas (5-40 min) e usar no máximo 6 ingredientes principais.
   Priorize receitas que usem a maior quantidade possível dos ingredientes informados.
-  Você pode sugerir até 2 ingredientes extras simples que o usuário talvez não tenha mencionado.`;
+  Você pode sugerir até 2 ingredientes extras simples que o usuário talvez não tenha mencionado.
+  IMPORTANTE: O modo de preparo deve ser BEM DETALHADO, incluindo tempos específicos de forno, geladeira, descanso ou cozimento quando aplicável.`;
 
   try {
     const response = await ai.models.generateContent({

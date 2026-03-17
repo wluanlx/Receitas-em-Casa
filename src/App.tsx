@@ -27,6 +27,64 @@ import { generateRecipesFromIngredients } from './services/gemini';
 
 type View = 'home' | 'results' | 'recipe' | 'favorites' | 'history';
 
+interface RecipeCardProps {
+  recipe: Recipe;
+  onSelect: (recipe: Recipe) => void;
+  onToggleFavorite: (recipe: Recipe) => void;
+  isFavorite: (id: string) => boolean;
+}
+
+const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSelect, onToggleFavorite, isFavorite }) => (
+  <motion.div 
+    layout
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="card group"
+    onClick={() => onSelect(recipe)}
+  >
+    <div className="relative h-40 overflow-hidden">
+      <img 
+        src={recipe.image} 
+        alt={recipe.name} 
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        referrerPolicy="no-referrer"
+        loading="lazy"
+      />
+      <div className="absolute top-2 right-2">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(recipe);
+          }}
+          className="p-2 bg-white/95 dark:bg-slate-800/95 rounded-full shadow-md backdrop-blur-sm"
+        >
+          <Heart size={16} className={isFavorite(recipe.id) ? 'fill-red-500 text-red-500' : 'text-slate-300'} />
+        </button>
+      </div>
+      <div className="absolute bottom-2 left-2">
+        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-[10px] font-black px-2 py-1 rounded-lg shadow-sm border border-white/20">
+          {recipe.difficulty}
+        </span>
+      </div>
+    </div>
+    <div className="p-3 space-y-2">
+      <h3 className="font-black text-sm text-slate-800 dark:text-white leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+        {recipe.name}
+      </h3>
+      <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-1">
+          <Clock size={12} className="text-primary" />
+          <span>{recipe.prepTime} min</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <ChefHat size={12} className="text-primary" />
+          <span>{recipe.ingredients.length} itens</span>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
 export default function App() {
   // State
   const [view, setView] = useState<View>('home');
@@ -168,55 +226,7 @@ export default function App() {
     </nav>
   );
 
-  const RecipeCard = ({ recipe }: { recipe: Recipe }) => (
-    <motion.div 
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="card group"
-      onClick={() => {
-        setSelectedRecipe(recipe);
-        setView('recipe');
-      }}
-    >
-      <div className="relative h-40 overflow-hidden">
-        <img 
-          src={recipe.image} 
-          alt={recipe.name} 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          referrerPolicy="no-referrer"
-          loading="lazy"
-        />
-        <div className="absolute top-2 right-2">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite(recipe);
-            }}
-            className="p-2 bg-white/95 dark:bg-slate-800/95 rounded-full shadow-md backdrop-blur-sm"
-          >
-            <Heart size={16} className={isFavorite(recipe.id) ? 'fill-red-500 text-red-500' : 'text-slate-300'} />
-          </button>
-        </div>
-        <div className="absolute bottom-2 left-2 bg-primary/90 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
-          {recipe.category}
-        </div>
-      </div>
-      <div className="p-3">
-        <h3 className="font-bold text-base mb-1 line-clamp-1 text-slate-800 dark:text-white">{recipe.name}</h3>
-        <div className="flex items-center gap-3 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-          <div className="flex items-center gap-1">
-            <Clock size={12} className="text-primary" />
-            <span>{recipe.prepTime} min</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <BarChart size={12} className="text-primary" />
-            <span>{recipe.difficulty}</span>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
+
 
   return (
     <div className="flex flex-col h-full overflow-y-auto scrollbar-hide">
@@ -345,7 +355,13 @@ export default function App() {
                 {filteredRecipes
                   .filter(r => !timeFilter || r.prepTime <= timeFilter)
                   .map(recipe => (
-                  <RecipeCard key={recipe.id} recipe={recipe} />
+                  <RecipeCard 
+                    key={recipe.id} 
+                    recipe={recipe} 
+                    onSelect={(r) => { setSelectedRecipe(r); setView('recipe'); }}
+                    onToggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                  />
                 ))}
               </div>
 
@@ -472,7 +488,13 @@ export default function App() {
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   {favorites.map(recipe => (
-                    <RecipeCard key={recipe.id} recipe={recipe} />
+                    <RecipeCard 
+                      key={recipe.id} 
+                      recipe={recipe} 
+                      onSelect={(r) => { setSelectedRecipe(r); setView('recipe'); }}
+                      onToggleFavorite={toggleFavorite}
+                      isFavorite={isFavorite}
+                    />
                   ))}
                 </div>
               )}
